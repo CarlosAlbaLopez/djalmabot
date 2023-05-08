@@ -28,7 +28,7 @@ public final class Main {
             Trigger t = TriggerBuilder
                 .newTrigger()
                 .withIdentity("CronTrigger")
-                .withSchedule(CronScheduleBuilder.cronSchedule("27 0/5 9-23 ? * * *"))
+                .withSchedule(CronScheduleBuilder.cronSchedule("27 0/5 10-23 ? * * *"))
                 .build();
 
             Scheduler s = StdSchedulerFactory.getDefaultScheduler();

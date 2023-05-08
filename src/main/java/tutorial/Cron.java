@@ -7,6 +7,8 @@ import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
 import java.time.Instant;
+import java.util.ArrayList;
+import java.util.List;
 import org.json.*;
 import org.quartz.Job;
 import org.quartz.JobExecutionContext;
@@ -15,13 +17,14 @@ import org.quartz.JobExecutionException;
 public class Cron implements Job {
 
     static Bot tBot = null;
+    static List<Integer> sentIds = new ArrayList<Integer>();
 
     public static void registerBot(Bot bot) {
         tBot = bot;
     }
 
     public void execute(JobExecutionContext context) throws JobExecutionException {
-        System.out.println("Cron triggered");
+        System.out.println("Cron triggered " + java.time.LocalDateTime.now());
         //Start getting matches data
         String url = "https://api.sofascore.com/api/v1/sport/football/events/live";
         HttpRequest request = HttpRequest
@@ -37,9 +40,11 @@ public class Cron implements Job {
             JSONArray events = obj.getJSONArray("events");
             System.out.println("Se han encontrado un total de " + events.length() + " partidos.");
             for (int i = 0; i < events.length(); i++) {
+                //System.out.println(i);
                 Match match = new Match();
                 JSONObject event = events.getJSONObject(i);
                 int eventId = event.getInt("id");
+                //System.out.println(eventId);
                 match.country = event.getJSONObject("tournament").getJSONObject("category").getString("name");
                 match.tournament = event.getJSONObject("tournament").getString("name");
                 match.homeTeam = event.getJSONObject("homeTeam").getString("name");
@@ -47,9 +52,9 @@ public class Cron implements Job {
                 match.homeScore = event.getJSONObject("homeScore").optInt("current");
                 match.awayScore = event.getJSONObject("awayScore").optInt("current");
                 // 6: 1st half - 7: 2nd half - 31: Halftime - 41: 1st extra - 42: 2nd extra
-                int status = event.getJSONObject("status").getInt("code");
+                int status = event.getJSONObject("status").optInt("code");
                 // Get current time
-                long currentPeriodStartTimestamp = event.getJSONObject("time").getLong("currentPeriodStartTimestamp");
+                long currentPeriodStartTimestamp = event.getJSONObject("time").optLong("currentPeriodStartTimestamp");
                 long unixTimestamp = Instant.now().getEpochSecond();
                 long diffTimestamp = unixTimestamp - currentPeriodStartTimestamp;
                 match.minutes =
@@ -58,10 +63,14 @@ public class Cron implements Job {
                         : status == 41
                             ? (diffTimestamp / 60) + 90
                             : status == 42 ? (diffTimestamp / 60) + 105 : diffTimestamp / 60;
-                Boolean hasStats = event
-                    .getJSONObject("tournament")
-                    .getJSONObject("uniqueTournament")
-                    .getBoolean("hasEventPlayerStatistics");
+                Boolean hasStats = false;
+                if (event.getJSONObject("tournament").has("uniqueTournament")) {
+                    hasStats =
+                        event
+                            .getJSONObject("tournament")
+                            .getJSONObject("uniqueTournament")
+                            .optBoolean("hasEventPlayerStatistics", false);
+                }
 
                 // Start getting statistics
                 if (hasStats) {
@@ -115,8 +124,7 @@ public class Cron implements Job {
                         }
 
                         //Start getting odds
-                        String oddsUrl =
-                            "https://api.sofascore.com/api/v1/event/" + eventId + "/provider/1/winning-odds";
+                        String oddsUrl = "https://api.sofascore.com/api/v1/event/" + eventId + "/odds/1/all";
                         HttpRequest oddsRequest = HttpRequest
                             .newBuilder()
                             .uri(URI.create(oddsUrl))
@@ -127,17 +135,24 @@ public class Cron implements Job {
                             HttpClient.newHttpClient().send(oddsRequest, HttpResponse.BodyHandlers.ofString());
                         String oddsJsonString = oddsResponse.body();
                         JSONObject oddsObj = new JSONObject(oddsJsonString);
-                        JSONObject homeOddsData = oddsObj.getJSONObject("home");
-                        JSONObject awayOddsData = oddsObj.getJSONObject("away");
-                        String homeFraction = homeOddsData.getString("fractionalValue");
-                        String awayFraction = awayOddsData.getString("fractionalValue");
-                        match.homeExpected = homeOddsData.optInt("expected");
-                        match.awayExpected = awayOddsData.optInt("expected");
-                        match.homeActual = homeOddsData.optInt("actual");
-                        match.awayActual = awayOddsData.optInt("actual");
+                        JSONArray markets = oddsObj.getJSONArray("markets");
+                        JSONObject homeOddsData = markets.getJSONObject(0).getJSONArray("choices").getJSONObject(0);
+                        JSONObject drawOddsData = markets.getJSONObject(0).getJSONArray("choices").getJSONObject(1);
+                        JSONObject awayOddsData = markets.getJSONObject(0).getJSONArray("choices").getJSONObject(2);
+                        String homeFraction = homeOddsData.optString("fractionalValue");
+                        String drawFraction = drawOddsData.optString("fractionalValue");
+                        String awayFraction = awayOddsData.optString("fractionalValue");
                         //Convert fractions to EU odds
-                        match.homeOdds = convertFractionStringOddsToIntegerOdds(homeFraction);
-                        match.awayOdds = convertFractionStringOddsToIntegerOdds(awayFraction);
+                        match.homeOdds = OddsConverter.convertFractionStringOddsToIntegerOdds(homeFraction);
+                        match.drawOdds = OddsConverter.convertFractionStringOddsToIntegerOdds(drawFraction);
+                        match.awayOdds = OddsConverter.convertFractionStringOddsToIntegerOdds(awayFraction);
+                        //Corners
+                        for (int j = 0; j < markets.length(); j++) {
+                            if (markets.getJSONObject(j).optInt("marketId") == 21) {
+                                match.cornerLine = markets.getJSONObject(j).optString("choiceGroup");
+                                break;
+                            }
+                        }
 
                         //Send the alerts that meet the conditions
                         if (
@@ -146,34 +161,31 @@ public class Cron implements Job {
                             match.minutes <= 85 &&
                             match.homeOdds <= 2 &&
                             Integer.parseInt(match.homeCorners) <= 7 &&
-                            Integer.parseInt(match.awayCorners) <= 7
+                            Integer.parseInt(match.awayCorners) <= 7 &&
+                            !sentIds.contains(eventId)
                         ) {
                             tBot.sendText(444461099L, match.toCornersString());
                             tBot.sendText(955823114L, match.toCornersString());
+                            sentIds.add(eventId);
+                            System.out.println("Enviada alerta corners el el partido: " + match.toString());
                         } else if (
                             match.awayScore >= match.homeScore &&
                             match.minutes >= 60 &&
                             match.minutes <= 85 &&
                             match.homeOdds <= 1.5 &&
                             Integer.parseInt(match.homeShots) >= 4 &&
-                            Integer.parseInt(match.homeShotsOn) >= 2
+                            Integer.parseInt(match.homeShotsOn) >= 2 &&
+                            !sentIds.contains(eventId)
                         ) {
                             tBot.sendText(444461099L, match.toComebackString());
                             tBot.sendText(955823114L, match.toComebackString());
-                        } else {
-                            System.out.println(
-                                "El partido nº " +
-                                i +
-                                " " +
-                                match.homeTeam +
-                                " - " +
-                                match.awayTeam +
-                                " no cumple ninguna condición."
-                            );
+                            sentIds.add(eventId);
+                            System.out.println("Enviada alerta remontada el el partido: " + match.toString());
                         }
                     }
                 }
             }
+            System.out.println("Todos los partidos revisados.");
         } catch (IOException e) {
             System.out.println("El partido ha dado el siguiente error (IOE): " + e);
             e.printStackTrace();
@@ -181,13 +193,5 @@ public class Cron implements Job {
             System.out.println("El partido ha dado el siguiente error (IE): " + e);
             e.printStackTrace();
         }
-    }
-
-    public double convertFractionStringOddsToIntegerOdds(String fraction) {
-        String[] parts = fraction.split("/");
-        int numerator = Integer.parseInt(parts[0]);
-        int denominator = Integer.parseInt(parts[1]);
-        double odds = (double) numerator / denominator;
-        return odds + 1;
     }
 }

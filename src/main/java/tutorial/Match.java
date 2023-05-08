@@ -21,12 +21,10 @@ public class Match {
     public String awayShotsBlocked;
     public String homePossession;
     public String awayPossession;
-    public int homeExpected;
-    public int awayExpected;
-    public int homeActual;
-    public int awayActual;
     public double homeOdds;
+    public double drawOdds;
     public double awayOdds;
+    public String cornerLine;
     //Icons
     String emojiBall = "\u26BD";
     String emojiCorner = "\u26F3";
@@ -37,6 +35,58 @@ public class Match {
     String emojiExclamation = "\u2757";
 
     public Match() {}
+
+    public String toString() {
+        return (
+            "DATOS: " +
+            " minutes: " +
+            minutes +
+            " country: " +
+            country +
+            " tournament: " +
+            tournament +
+            " homeTeam: " +
+            homeTeam +
+            " awayTeam: " +
+            awayTeam +
+            " homeScore: " +
+            homeScore +
+            " awayScore: " +
+            awayScore +
+            " homeCorners: " +
+            homeCorners +
+            " awayCorners: " +
+            awayCorners +
+            " homeShots: " +
+            homeShots +
+            " awayShots: " +
+            awayShots +
+            " homeShotsOn: " +
+            homeShotsOn +
+            " awayShotsOn: " +
+            awayShotsOn +
+            " homeShotsOff: " +
+            homeShotsOff +
+            " awayShotsOff: " +
+            awayShotsOff +
+            " homeShotsBlocked: " +
+            homeShotsBlocked +
+            " awayShotsBlocked: " +
+            awayShotsBlocked +
+            " homePossession: " +
+            homePossession +
+            " awayPossession: " +
+            awayPossession +
+            " homeOdds: " +
+            homeOdds +
+            " drawOdds: " +
+            drawOdds +
+            " awayOdds: " +
+            awayOdds +
+            " cornerLine: " +
+            cornerLine
+        );
+    }
 
     public String toCornersString() {
         return (
@@ -55,24 +105,20 @@ public class Match {
             ") " +
             awayTeam +
             "\n\n<em>Datos live:</em>\n" +
-            "Cuota prepartido 12: <strong>" +
+            "Cuota prepartido 1X2: <strong>" +
             homeOdds +
-            "</strong> | <strong>" +
+            "</strong> | " +
+            drawOdds +
+            " | " +
             awayOdds +
-            "</strong>\nProbabilidades según cuotas 12:" +
-            homeExpected +
-            " | " +
-            awayExpected +
-            "\nProbabilidades reales 12:" +
-            homeActual +
-            " | " +
-            awayActual +
             "\n\n<em>Info de mercado:</em>\n\t" +
             emojiCorner +
             "Corners: <strong>" +
             homeCorners +
             "</strong>-" +
             awayCorners +
+            "\n\tLínea córners prepartido: " +
+            cornerLine +
             "\n\t" +
             emojiBall +
             "Tiros: <strong>" +
@@ -115,18 +161,12 @@ public class Match {
             ") " +
             awayTeam +
             "\n\n<em>Info de mercado:</em>\n" +
-            "Cuota prepartido 12: <strong>" +
+            "Cuota prepartido 1X2: <strong>" +
             homeOdds +
             "</strong> | <strong>" +
+            drawOdds +
+            "</strong> | <strong>" +
             awayOdds +
-            "</strong>\nProbabilidades según cuotas 12:" +
-            homeExpected +
-            " | " +
-            awayExpected +
-            "\nProbabilidades reales 12:" +
-            homeActual +
-            " | " +
-            awayActual +
             "\n\n<em>Datos live:</em>\n\t" +
             emojiBall +
             "Tiros: <strong>" +
