@@ -7,6 +7,9 @@ import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
 import java.time.Instant;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
+import java.time.format.FormatStyle;
 import java.util.ArrayList;
 import java.util.List;
 import org.json.*;
@@ -24,7 +27,9 @@ public class Cron implements Job {
     }
 
     public void execute(JobExecutionContext context) throws JobExecutionException {
-        System.out.println("Cron triggered " + java.time.LocalDateTime.now());
+        System.out.println(
+            "Cron triggered " + LocalDateTime.now().format(DateTimeFormatter.ofLocalizedDateTime(FormatStyle.SHORT))
+        );
         //Start getting matches data
         String url = "https://api.sofascore.com/api/v1/sport/football/events/live";
         HttpRequest request = HttpRequest
@@ -157,40 +162,47 @@ public class Cron implements Job {
                         //Send the alerts that meet the conditions
                         if (
                             match.awayScore >= match.homeScore &&
-                            match.minutes >= 60 &&
+                            match.minutes >= 55 &&
                             match.minutes <= 85 &&
                             match.homeOdds <= 2 &&
+                            Integer.parseInt(match.homeCorners) >= Integer.parseInt(match.awayCorners) &&
                             Integer.parseInt(match.homeCorners) <= 7 &&
                             Integer.parseInt(match.awayCorners) <= 7 &&
                             !sentIds.contains(eventId)
                         ) {
-                            tBot.sendText(444461099L, match.toCornersString());
-                            tBot.sendText(955823114L, match.toCornersString());
+                            tBot.sendText(444461099L, match.toCornersString()); //yo
+                            tBot.sendText(955823114L, match.toCornersString()); //carlitos
+                            tBot.sendText(-1001241643895L, match.toCornersString()); //channel
+                            // Add event id to List
                             sentIds.add(eventId);
-                            System.out.println("Enviada alerta corners el el partido: " + match.toString());
+                            System.out.println("Enviada alerta corners en el partido: " + match.toString());
                         } else if (
                             match.awayScore >= match.homeScore &&
-                            match.minutes >= 60 &&
+                            match.minutes >= 55 &&
                             match.minutes <= 85 &&
-                            match.homeOdds <= 1.5 &&
-                            Integer.parseInt(match.homeShots) >= 4 &&
+                            match.homeOdds <= 2 &&
                             Integer.parseInt(match.homeShotsOn) >= 2 &&
                             !sentIds.contains(eventId)
                         ) {
-                            tBot.sendText(444461099L, match.toComebackString());
-                            tBot.sendText(955823114L, match.toComebackString());
+                            tBot.sendText(444461099L, match.toComebackString()); //yo
+                            tBot.sendText(955823114L, match.toComebackString()); //carlitos
+                            tBot.sendText(-1001241643895L, match.toCornersString()); //channel
+                            // Add event id to List
                             sentIds.add(eventId);
-                            System.out.println("Enviada alerta remontada el el partido: " + match.toString());
                         }
                     }
                 }
             }
+            System.out.println(sentIds);
             System.out.println("Todos los partidos revisados.");
         } catch (IOException e) {
             System.out.println("El partido ha dado el siguiente error (IOE): " + e);
             e.printStackTrace();
         } catch (InterruptedException e) {
             System.out.println("El partido ha dado el siguiente error (IE): " + e);
+            e.printStackTrace();
+        } catch (Exception e) {
+            System.out.println("El partido ha dado el siguiente error (E): " + e);
             e.printStackTrace();
         }
     }

@@ -38,52 +38,51 @@ public class Match {
 
     public String toString() {
         return (
-            "DATOS: " +
-            " minutes: " +
+            "Time: " +
             minutes +
-            " country: " +
+            " - country: " +
             country +
-            " tournament: " +
+            " - tournament: " +
             tournament +
-            " homeTeam: " +
+            " - homeTeam: " +
             homeTeam +
-            " awayTeam: " +
+            " - awayTeam: " +
             awayTeam +
-            " homeScore: " +
+            " - homeScore: " +
             homeScore +
-            " awayScore: " +
+            " - awayScore: " +
             awayScore +
-            " homeCorners: " +
+            " - homeCorners: " +
             homeCorners +
-            " awayCorners: " +
+            " - awayCorners: " +
             awayCorners +
-            " homeShots: " +
+            " - homeShots: " +
             homeShots +
-            " awayShots: " +
+            " - awayShots: " +
             awayShots +
-            " homeShotsOn: " +
+            " - homeShotsOn: " +
             homeShotsOn +
-            " awayShotsOn: " +
+            " - awayShotsOn: " +
             awayShotsOn +
-            " homeShotsOff: " +
+            " - homeShotsOff: " +
             homeShotsOff +
-            " awayShotsOff: " +
+            " - awayShotsOff: " +
             awayShotsOff +
-            " homeShotsBlocked: " +
+            " - homeShotsBlocked: " +
             homeShotsBlocked +
-            " awayShotsBlocked: " +
+            " - awayShotsBlocked: " +
             awayShotsBlocked +
-            " homePossession: " +
+            " - homePossession: " +
             homePossession +
-            " awayPossession: " +
+            " - awayPossession: " +
             awayPossession +
-            " homeOdds: " +
+            " - homeOdds: " +
             homeOdds +
-            " drawOdds: " +
+            " - drawOdds: " +
             drawOdds +
-            " awayOdds: " +
+            " - awayOdds: " +
             awayOdds +
-            " cornerLine: " +
+            " - cornerLine: " +
             cornerLine
         );
     }
