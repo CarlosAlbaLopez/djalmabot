@@ -113,8 +113,8 @@ public class Cron implements Job {
                                 JSONArray data = stats.getJSONObject(j).getJSONArray("statisticsItems");
                                 for (int k = 0; k < data.length(); k++) {
                                     if (data.getJSONObject(k).getString("name").equals("Corner kicks")) {
-                                        match.homeCorners = data.getJSONObject(k).getString("home");
-                                        match.awayCorners = data.getJSONObject(k).getString("away");
+                                        match.homeCorners = data.getJSONObject(k).optString("home", "0");
+                                        match.awayCorners = data.getJSONObject(k).optString("away", "0");
                                     }
                                 }
                             } else if (stats.getJSONObject(j).getString("groupName").equals("Possession")) {
@@ -159,19 +159,22 @@ public class Cron implements Job {
                             }
                         }
 
+                        System.out.println("Status: " + status + " - " + match.toString());
+
                         //Send the alerts that meet the conditions
                         if (
                             match.awayScore >= match.homeScore &&
                             match.minutes >= 55 &&
                             match.minutes <= 85 &&
                             match.homeOdds <= 2 &&
-                            Integer.parseInt(match.homeCorners) >= Integer.parseInt(match.awayCorners) &&
-                            Integer.parseInt(match.homeCorners) <= 7 &&
-                            Integer.parseInt(match.awayCorners) <= 7 &&
+                            Integer.parseInt(match.homeCorners) > Integer.parseInt(match.awayCorners) &&
+                            Integer.parseInt(match.homeCorners) > 2 &&
+                            Integer.parseInt(match.homeCorners) < 8 &&
+                            Integer.parseInt(match.awayCorners) < 8 &&
                             !sentIds.contains(eventId)
                         ) {
-                            tBot.sendText(444461099L, match.toCornersString()); //yo
-                            tBot.sendText(955823114L, match.toCornersString()); //carlitos
+                            // tBot.sendText(444461099L, match.toCornersString()); //yo
+                            // tBot.sendText(955823114L, match.toCornersString()); //carlitos
                             tBot.sendText(-1001241643895L, match.toCornersString()); //channel
                             // Add event id to List
                             sentIds.add(eventId);
@@ -184,8 +187,8 @@ public class Cron implements Job {
                             Integer.parseInt(match.homeShotsOn) >= 2 &&
                             !sentIds.contains(eventId)
                         ) {
-                            tBot.sendText(444461099L, match.toComebackString()); //yo
-                            tBot.sendText(955823114L, match.toComebackString()); //carlitos
+                            // tBot.sendText(444461099L, match.toComebackString()); //yo
+                            // tBot.sendText(955823114L, match.toComebackString()); //carlitos
                             tBot.sendText(-1001241643895L, match.toCornersString()); //channel
                             // Add event id to List
                             sentIds.add(eventId);
