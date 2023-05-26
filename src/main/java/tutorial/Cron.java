@@ -67,7 +67,7 @@ public class Cron implements Job {
                         ? (diffTimestamp / 60) + 45
                         : status == 41
                             ? (diffTimestamp / 60) + 90
-                            : status == 42 ? (diffTimestamp / 60) + 105 : diffTimestamp / 60;
+                            : status == 42 ? (diffTimestamp / 60) + 105 : status == 31 ? 45 : diffTimestamp / 60;
                 Boolean hasStats = false;
                 if (event.getJSONObject("tournament").has("uniqueTournament")) {
                     hasStats =
