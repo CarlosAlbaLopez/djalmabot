@@ -19,12 +19,12 @@ import org.quartz.JobExecutionException;
 
 public class Cron implements Job {
 
-    static Bot tBot = null;
+    // static Bot tBot = null;
     static List<Integer> sentIds = new ArrayList<Integer>();
 
-    public static void registerBot(Bot bot) {
-        tBot = bot;
-    }
+    // public static void registerBot(Bot bot) {
+    //     tBot = bot;
+    // }
 
     public void execute(JobExecutionContext context) throws JobExecutionException {
         System.out.println(
@@ -49,6 +49,7 @@ public class Cron implements Job {
                 Match match = new Match();
                 JSONObject event = events.getJSONObject(i);
                 int eventId = event.getInt("id");
+                match.eventId = eventId;
                 //System.out.println(eventId);
                 match.country = event.getJSONObject("tournament").getJSONObject("category").getString("name");
                 match.tournament = event.getJSONObject("tournament").getString("name");
@@ -159,7 +160,9 @@ public class Cron implements Job {
                             }
                         }
 
-                        System.out.println("Status: " + status + " - " + match.toString());
+                        System.out.println("bdd");
+                        QuickStart.registerMatch(match);
+                        System.out.println(eventId);
 
                         //Send the alerts that meet the conditions
                         if (
@@ -175,7 +178,7 @@ public class Cron implements Job {
                         ) {
                             // tBot.sendText(444461099L, match.toCornersString()); //yo
                             // tBot.sendText(955823114L, match.toCornersString()); //carlitos
-                            tBot.sendText(-1001241643895L, match.toCornersString()); //channel
+                            //tBot.sendText(-1001241643895L, match.toCornersString()); //channel
                             // Add event id to List
                             sentIds.add(eventId);
                             System.out.println("Enviada alerta corners en el partido: " + match.toString());
@@ -189,9 +192,10 @@ public class Cron implements Job {
                         ) {
                             // tBot.sendText(444461099L, match.toComebackString()); //yo
                             // tBot.sendText(955823114L, match.toComebackString()); //carlitos
-                            tBot.sendText(-1001241643895L, match.toCornersString()); //channel
+                            //tBot.sendText(-1001241643895L, match.toCornersString()); //channel
                             // Add event id to List
                             sentIds.add(eventId);
+                            System.out.println("Enviada alerta remontada en el partido: " + match.toString());
                         }
                     }
                 }

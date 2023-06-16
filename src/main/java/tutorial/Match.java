@@ -2,6 +2,7 @@ package tutorial;
 
 public class Match {
 
+    public int eventId;
     public long minutes;
     public String country;
     public String tournament;

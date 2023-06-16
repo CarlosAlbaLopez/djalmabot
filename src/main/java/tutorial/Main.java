@@ -20,7 +20,7 @@ public final class Main {
         TelegramBotsApi botsApi = new TelegramBotsApi(DefaultBotSession.class);
         Bot bot = new Bot();
         botsApi.registerBot(bot);
-        Cron.registerBot(bot);
+        //Cron.registerBot(bot);
 
         try {
             JobDetail j = JobBuilder.newJob(Cron.class).build();
@@ -28,7 +28,7 @@ public final class Main {
             Trigger t = TriggerBuilder
                 .newTrigger()
                 .withIdentity("CronTrigger")
-                .withSchedule(CronScheduleBuilder.cronSchedule("0 0/5 * * * ?"))
+                .withSchedule(CronScheduleBuilder.cronSchedule("0 0/10 * * * ?"))
                 .build();
 
             Scheduler s = StdSchedulerFactory.getDefaultScheduler();
