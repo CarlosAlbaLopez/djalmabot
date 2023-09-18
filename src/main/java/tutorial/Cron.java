@@ -19,12 +19,12 @@ import org.quartz.JobExecutionException;
 
 public class Cron implements Job {
 
-    // static Bot tBot = null;
+    static Bot tBot = null;
     static List<Integer> sentIds = new ArrayList<Integer>();
 
-    // public static void registerBot(Bot bot) {
-    //     tBot = bot;
-    // }
+    public static void registerBot(Bot bot) {
+        tBot = bot;
+    }
 
     public void execute(JobExecutionContext context) throws JobExecutionException {
         System.out.println(
@@ -160,11 +160,7 @@ public class Cron implements Job {
                             }
                         }
 
-                        System.out.println("bdd");
-                        QuickStart.registerMatch(match);
-                        System.out.println(eventId);
-
-                        //Send the alerts that meet the conditions
+                        //Send the alerts that meet the conditions and register match in db
                         if (
                             match.awayScore >= match.homeScore &&
                             match.minutes >= 55 &&
@@ -178,10 +174,12 @@ public class Cron implements Job {
                         ) {
                             // tBot.sendText(444461099L, match.toCornersString()); //yo
                             // tBot.sendText(955823114L, match.toCornersString()); //carlitos
-                            //tBot.sendText(-1001241643895L, match.toCornersString()); //channel
+                            tBot.sendText(-1001241643895L, match.toCornersString()); //channel
                             // Add event id to List
                             sentIds.add(eventId);
                             System.out.println("Enviada alerta corners en el partido: " + match.toString());
+                            QuickStart.registerMatch(match, 1);
+                            System.out.println("Partido registrado en bdd");
                         } else if (
                             match.awayScore >= match.homeScore &&
                             match.minutes >= 55 &&
@@ -192,10 +190,12 @@ public class Cron implements Job {
                         ) {
                             // tBot.sendText(444461099L, match.toComebackString()); //yo
                             // tBot.sendText(955823114L, match.toComebackString()); //carlitos
-                            //tBot.sendText(-1001241643895L, match.toCornersString()); //channel
+                            tBot.sendText(-1001241643895L, match.toCornersString()); //channel
                             // Add event id to List
                             sentIds.add(eventId);
                             System.out.println("Enviada alerta remontada en el partido: " + match.toString());
+                            QuickStart.registerMatch(match, 1);
+                            System.out.println("Partido registrado en bdd");
                         }
                     }
                 }

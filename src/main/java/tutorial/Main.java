@@ -20,7 +20,7 @@ public final class Main {
         TelegramBotsApi botsApi = new TelegramBotsApi(DefaultBotSession.class);
         Bot bot = new Bot();
         botsApi.registerBot(bot);
-        //Cron.registerBot(bot);
+        Cron.registerBot(bot);
 
         try {
             JobDetail j = JobBuilder.newJob(Cron.class).build();

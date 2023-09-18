@@ -29,7 +29,7 @@ public class QuickStart {
         }
     }
 
-    public static void registerMatch(Match match) {
+    public static void registerMatch(Match match, int alertType) {
         try (MongoClient mongoClient = MongoClients.create(uri)) {
             MongoDatabase tBotDB = mongoClient.getDatabase("tBot");
             MongoCollection<Document> matchesCollection = tBotDB.getCollection("matches");
@@ -37,6 +37,7 @@ public class QuickStart {
             Document matchDoc = new Document("_id", new ObjectId());
             matchDoc
                 .append("eventId", match.eventId)
+                .append("alertType", alertType)
                 .append("minutes", match.minutes)
                 .append("country", match.country)
                 .append("tournament", match.tournament)
