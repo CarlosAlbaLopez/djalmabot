@@ -21,6 +21,7 @@ public final class Main {
         Bot bot = new Bot();
         botsApi.registerBot(bot);
         Cron.registerBot(bot);
+        ValueCron.registerBot(bot);
 
         try {
             JobDetail j = JobBuilder.newJob(Cron.class).build();
@@ -28,7 +29,24 @@ public final class Main {
             Trigger t = TriggerBuilder
                 .newTrigger()
                 .withIdentity("CronTrigger")
-                .withSchedule(CronScheduleBuilder.cronSchedule("0 0/5 * * * ?"))
+                .withSchedule(CronScheduleBuilder.cronSchedule("0 0/5 9-23 * * ?"))
+                .build();
+
+            Scheduler s = StdSchedulerFactory.getDefaultScheduler();
+
+            s.start();
+            s.scheduleJob(j, t);
+        } catch (SchedulerException se) {
+            se.printStackTrace();
+        }
+
+        try {
+            JobDetail j = JobBuilder.newJob(ValueCron.class).build();
+
+            Trigger t = TriggerBuilder
+                .newTrigger()
+                .withIdentity("ValueCronTrigger")
+                .withSchedule(CronScheduleBuilder.cronSchedule("0 0/1 * * * ?"))
                 .build();
 
             Scheduler s = StdSchedulerFactory.getDefaultScheduler();

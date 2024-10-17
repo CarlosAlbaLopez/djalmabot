@@ -37,6 +37,7 @@ public class Bot extends TelegramLongPollingBot {
             .chatId(who.toString()) // Who are we sending a message to
             .text(what)
             .parseMode("HTML")
+            .disableWebPagePreview(true)
             .build(); // Message content
         try {
             execute(sm); // Actually sending the message

@@ -2,6 +2,8 @@ package tutorial;
 
 public class Match {
 
+    public int eventId;
+    public int status;
     public long minutes;
     public String country;
     public String tournament;
@@ -21,10 +23,14 @@ public class Match {
     public String awayShotsBlocked;
     public String homePossession;
     public String awayPossession;
+    public double preMatchHomeOdds;
+    public double preMatchAwayOdds;
     public double homeOdds;
     public double drawOdds;
     public double awayOdds;
     public String cornerLine;
+    public boolean hasStats;
+    public boolean sendAlert;
     //Icons
     String emojiBall = "\u26BD";
     String emojiCorner = "\u26F3";
@@ -194,6 +200,30 @@ public class Match {
             homeCorners +
             "</strong>-" +
             awayCorners
+        );
+    }
+
+    public String toTennisString() {
+        return (
+            "<strong>Alerta Tennis Femenino</strong>\n\n" +
+            tournament +
+            "\n" +
+            homeTeam +
+            " (" +
+            homeScore +
+            " - " +
+            awayScore +
+            ") " +
+            awayTeam +
+            "\n\n<em>Info de mercado:</em>\n" +
+            "Cuotas prepartido: " +
+            preMatchHomeOdds +
+            " | " +
+            preMatchAwayOdds +
+            "\n\nCuotas live: " +
+            homeOdds +
+            " | " +
+            awayOdds
         );
     }
 }
