@@ -3,6 +3,7 @@ package tutorial;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.util.List;
+import java.util.Date;
 
 public class ValueBet {
     private String sport_id;
@@ -34,6 +35,7 @@ public class ValueBet {
     public static final String emojiMoney = EmojiConstants.EMOJI_MONEY_BAG;
     public static final String emojiDice = EmojiConstants.EMOJI_DICE;
     public static final String emojiStake = EmojiConstants.EMOJI_BANK;
+    public static final String emojiClock = EmojiConstants.EMOJI_CLOCK;
 
     // Constructor
     public ValueBet(String sport_id, List<String> teams, double probability, String bk, long sortBy,
@@ -191,7 +193,7 @@ public class ValueBet {
         // Construct output string
         StringBuilder sb = new StringBuilder();
 
-        sb.append("<strong>Value Bet365</strong>\n\n");
+        // sb.append("<strong>Value Bet365</strong>\n\n");
 
         if(sport_id.equals("Basketball")) {
             sb.append(emojiBasketball);
@@ -207,12 +209,13 @@ public class ValueBet {
             sb.append(emojiEsports);
         }
 
-        sb.append(" " + formattedTeams + "\n" +
-            emojiTrophy + " " + tournament + "\n\n" +
+        sb.append(" <strong>" + formattedTeams + "</strong>\n" +
+            emojiTrophy + " " + tournament + "\n" +
+            emojiClock + " " + new Date(time) + "\n\n" +
             emojiMoney + " " + eu + "\n" +
             emojiDice + " " + roundedProbability + "%" + "\n" +
-            emojiChart + " " + roundedOvervalue + "%" + "\n\n" +
-            type.toString() + "\n\n" +
+            emojiChart + " " + roundedOvervalue + "%" + "\n\n<strong>" +
+            type.toString() + "</strong>\n\n" +
             emojiStake + " " + stake);
                     
         return (sb.toString());

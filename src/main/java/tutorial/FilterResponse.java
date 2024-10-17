@@ -23,7 +23,7 @@ public class FilterResponse {
                 double overvalue = record.getDouble("overvalue");
                 // Filter based on the minimum probability
                 if (probability >= 0.25) {
-                    double thresholdOvervalue = 0.1 - (probability * 0.05);
+                    double thresholdOvervalue = 0.12 - (probability * 0.06);
                     if(overvalue - 1 >= thresholdOvervalue) {
                         filteredRecords.add(record);
                     }
