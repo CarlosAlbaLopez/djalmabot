@@ -1,1 +1,66 @@
-/.env
+# Compiled class files
+*.class
+
+# Log file
+*.log
+
+# BlueJ files
+*.ctxt
+
+# Mobile Tools for Java (J2ME)
+.mtj.tmp/
+
+# Package Files #
+*.jar
+*.war
+*.ear
+
+# Virtual machine crash logs, see http://www.java.com/en/download/help/error_hotspot.xml
+hs_err_pid*
+
+# Maven specific
+target/
+pom.xml.tag
+pom.xml.releaseBackup
+pom.xml.versionsBackup
+pom.xml.next
+release.properties
+
+# Gradle specific
+.gradle/
+build/
+
+# Intellij IDEA
+.idea/
+*.iws
+*.iml
+*.ipr
+out/
+
+# NetBeans specific
+nbproject/private/
+build/
+nbbuild/
+dist/
+nbdist/
+.nb-gradle/
+
+# Eclipse specific
+.metadata
+*.bak
+*.tmp
+*.swp
+*.orig
+*.log
+.settings/
+bin/
+tmp/
+
+# VS Code specific
+.vscode/
+
+# Other IDEs
+*.DS_Store
+Thumbs.db
+
+.env
